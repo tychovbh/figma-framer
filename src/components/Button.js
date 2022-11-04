@@ -27,5 +27,6 @@
 import React from "react"
 
 export function TestComponent() {
-    return React.createElement("div", {}, "Something else")
+    return <div>test</div>
+    // return React.createElement("div", {}, "Something else")
 }
