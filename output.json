@@ -1,0 +1,36 @@
+{
+  "tokenSetOrder": {
+    "0": {
+      "value": "global",
+      "type": "other"
+    }
+  },
+  "primary": {
+    "value": "#0bea1a",
+    "type": "color"
+  },
+  "secondary": {
+    "value": "#fff",
+    "type": "color"
+  },
+  "xs": {
+    "value": "4px",
+    "type": "spacing"
+  },
+  "sm": {
+    "value": "8px",
+    "type": "spacing"
+  },
+  "md": {
+    "value": "12px",
+    "type": "spacing"
+  },
+  "lg": {
+    "value": "16px",
+    "type": "spacing"
+  },
+  "xl": {
+    "value": "20px",
+    "type": "spacing"
+  }
+}

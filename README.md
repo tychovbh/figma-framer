@@ -1,145 +1,181 @@
-# Framer ESM Example Setup
+# Basic Style Dictionary
 
-This is an example how to set up a repository that builds code which can be consumed in Framer. It builds standard JavaScript into ES Modules that you can both use locally for development or to deploy to any http server for distribution across your team or the internet.
-
-- `yarn run serve` This runs a local web server with the built code.
-- `yarn run build` This builds the code in `dist`.
-
-All the magic is in the `esmbuild` folder. Contributions are welcome.
-
-### Features
-
-- Built on `esbuild` for speed and to support JavaScript, TypeScript and JSX.
-- Custom plugin to handle ESM imports and rewrite local import paths.
-- CSS Modules plugin to support writing css scoped modules.
-- GitHub Workflow to deploy versioned code on GitHub pages.
-
-## 🏁 Quickstart
-
-Start the development server with:
-
-```
-yarn run serve
+This example code is bare-bones to show you what this framework can do. If you have the style-dictionary module installed globally, you can `cd` into this directory and run:
+```bash
+style-dictionary build
 ```
 
-Open Framer, create a code file and paste the following:
+You should see something like this output:
+```
+Copying starter files...
 
-```.tsx
-import { addPropertyControls, ControlType } from "framer"
-import { Button } from "http://127.0.0.1:8000/index.js"
+Source style dictionary starter files created!
 
-export default Button as React.ComponentType
+Running `style-dictionary build` for the first time to generate build artifacts.
 
-addPropertyControls(Button, {
-    title: {
-        title: "Title",
-        type: ControlType.String,
-        defaultValue: "Title",
-    },
-})
+
+scss
+✔︎  build/scss/_variables.scss
+
+android
+✔︎  build/android/font_dimens.xml
+✔︎  build/android/colors.xml
+
+compose
+✔︎ build/compose/StyleDictionaryColor.kt
+✔︎ build/compose/StyleDictionarySize.kt
+
+ios
+✔︎  build/ios/StyleDictionaryColor.h
+✔︎  build/ios/StyleDictionaryColor.m
+✔︎  build/ios/StyleDictionarySize.h
+✔︎  build/ios/StyleDictionarySize.m
+
+ios-swift
+✔︎  build/ios-swift/StyleDictionary.swift
+
+ios-swift-separate-enums
+✔︎  build/ios-swift/StyleDictionaryColor.swift
+✔︎  build/ios-swift/StyleDictionarySize.swift
 ```
 
-You can now add your component to the canvas and configure it using the defined `propertyControls`. This setup assumes you want to define them only on the Framer side (keeping your code clean) but you can also keep them in the original source.
-
-The imported esm gets cached quite agressively, if you want to make sure you see the latest version you can add a random value to the imported url line:
-
-```.tsx
-import { Button } from "http://127.0.0.1:8001/index.js?123"
+Good for you! You have now built your first style dictionary! Moving on, take a look at what we have built. This should have created a build directory and it should look like this:
+```
+├── README.md
+├── config.json
+├── tokens/
+│   ├── color/
+│       ├── base.json
+│       ├── font.json
+│   ├── size/
+│       ├── font.json
+├── build/
+│   ├── android/
+│      ├── font_dimens.xml
+│      ├── colors.xml
+│   ├── compose/
+│      ├── StyleDictionaryColor.kt
+│      ├── StyleDictionarySize.kt
+│   ├── scss/
+│      ├── _variables.scss
+│   ├── ios/
+│      ├── StyleDictionaryColor.h
+│      ├── StyleDictionaryColor.m
+│      ├── StyleDictionarySize.h
+│      ├── StyleDictionarySize.m
+│   ├── ios-swift/
+│      ├── StyleDictionary.swift
+│      ├── StyleDictionaryColor.swift
+│      ├── StyleDictionarySize.swift
 ```
 
-If you forget to start your local server, your component will render with:
+If you open `config.json` you will see there are 5 platforms defined: scss, android, compose, ios, and ios-swift. Each platform has a transformGroup, buildPath, and files. The buildPath and files of the platform should match up to the files what were built. The files built should look like these:
 
-```
-Error in <name>.tsx Failed to Fetch
-```
+**Android**
+```xml
+<!-- font_dimens.xml -->
+<resources>
+  <dimen name="size_font_small">12.00sp</dimen>
+  <dimen name="size_font_medium">16.00sp</dimen>
+  <dimen name="size_font_large">32.00sp</dimen>
+  <dimen name="size_font_base">16.00sp</dimen>
+</resources>
 
-If you want to import a whole library to expose multiple components you can export them like this. Because Framer uses static analysis to recognize components, you will need one line per exported component.
-
-```.tsx
-import { addPropertyControls, ControlType } from "framer"
-import * as lib from "http://127.0.0.1:8000/index.js"
-
-addPropertyControls(lib.Button, {
-    title: {
-        title: "Title",
-        type: ControlType.String,
-        defaultValue: "Title",
-    },
-})
-
-export const Button: React.ComponentType = lib.Button
-export const Battery: React.ComponentType = lib.Battery
-```
-
-Beware that esm was designed for many small files that the browser can cache and optimize for. If you make your library too big, you'll lose out on these advantages. But it's a trade-off.
-
-
-## Deployment
-
-Once you are ready to deploy your code, it should be uploaded to an https endpoint with a versioned url. We have set up a [Workflow](https://github.com/framer/example-framer-esm-setup/actions) to build the code and deploy to [GitHub Pages](https://github.com/framer/example-framer-esm-setup/tree/pages). To ship a next version you simply type:
-
-```
-yarn run deploy
+<!-- colors.xml -->
+<resources>
+  <color name="color_base_gray_light">#ffcccccc</color>
+  <color name="color_base_gray_medium">#ff999999</color>
+  <color name="color_base_gray_dark">#ff111111</color>
+  <color name="color_base_red">#ffff0000</color>
+  <color name="color_base_green">#ff00ff00</color>
+  <color name="color_font_base">#ffff0000</color>
+  <color name="color_font_secondary">#ff00ff00</color>
+  <color name="color_font_tertiary">#ffcccccc</color>
+</resources>
 ```
 
-You'll have to type a new version (let's say `1.0.4`), and soon the code will be deployed to: https://framer.github.io/example-framer-esm-setup/esmbuild@1.0.4/index.js. You can now update your imports to the production url and you'll get the exact same result:
+**Compose**
+```kotlin
+object StyleDictionaryColor {
+  val colorBaseGrayDark = Color(0xff111111)
+  val colorBaseGrayLight = Color(0xffcccccc)
+  val colorBaseGrayMedium = Color(0xff999999)
+  val colorBaseGreen = Color(0xff00ff00)
+  val colorBaseRed = Color(0xffff0000)
+  val colorFontBase = Color(0xffff0000)
+  val colorFontSecondary = Color(0xff00ff00)
+  val colorFontTertiary = Color(0xffcccccc)
+}
 
-```.tsx
-import { Button } from "https://framer.github.io/example-framer-esm-setup/esmbuild@1.0.4/index.js"
+object StyleDictionarySize {
+  /** the base size of the font */
+  val sizeFontBase = 16.00.sp
+  /** the large size of the font */
+  val sizeFontLarge = 32.00.sp
+  /** the medium size of the font */
+  val sizeFontMedium = 16.00.sp
+  /** the small size of the font */
+  val sizeFontSmall = 12.00.sp
+}
 ```
 
-It's very important to version your code, so endpoints stay stable. To move to a new version, you simply update the import urls wherever you need.
-
-## CSS
-
-You can use the default esbuild [css importer](https://esbuild.github.io/content-types/#css), or you can use a [plugin to use css modules](https://github.com/indooorsman/esbuild-css-modules-plugin), that optionally auto inserts the css as a `<style>` tag (as configured).
-
-## Imports
-
-The `plugin.esm.js` makes sure that your local file imports are translated to esm imports. In the example configurations it works as follows:
-
-#### Externals (for import maps)
-
-```.tsx
-import React from "react"
-import ReactDOM from "react-dom"
-import Framer from "framer"
-import motion from "framer-motion"
+**SCSS**
+```scss
+// variables.scss
+$color-base-gray-light: #cccccc;
+$color-base-gray-medium: #999999;
+$color-base-gray-dark: #111111;
+$color-base-red: #ff0000;
+$color-base-green: #00ff00;
+$color-font-base: #ff0000;
+$color-font-secondary: #00ff00;
+$color-font-tertiary: #cccccc;
+$size-font-small: 0.75rem;
+$size-font-medium: 1rem;
+$size-font-large: 2rem;
+$size-font-base: 1rem;
 ```
 
-Externals work like externals, so they can be picked up by an [import map](https://github.com/WICG/import-maps). In Framer we defined specific ones in the current import map, so we marked them as externals in the setup here.
+**iOS**
+```objc
+#import "StyleDictionaryColor.h"
 
-#### Node Modules
+@implementation StyleDictionaryColor
 
-```.tsx
-import * as _ from "lodash"
++ (UIColor *)color:(StyleDictionaryColorName)colorEnum{
+  return [[self values] objectAtIndex:colorEnum];
+}
+
++ (NSArray *)values {
+  static NSArray* colorArray;
+  static dispatch_once_t onceToken;
+
+  dispatch_once(&onceToken, ^{
+    colorArray = @[
+[UIColor colorWithRed:0.800f green:0.800f blue:0.800f alpha:1.000f],
+[UIColor colorWithRed:0.600f green:0.600f blue:0.600f alpha:1.000f],
+[UIColor colorWithRed:0.067f green:0.067f blue:0.067f alpha:1.000f],
+[UIColor colorWithRed:1.000f green:0.000f blue:0.000f alpha:1.000f],
+[UIColor colorWithRed:0.000f green:1.000f blue:0.000f alpha:1.000f],
+[UIColor colorWithRed:1.000f green:0.000f blue:0.000f alpha:1.000f],
+[UIColor colorWithRed:0.000f green:1.000f blue:0.000f alpha:1.000f],
+[UIColor colorWithRed:0.800f green:0.800f blue:0.800f alpha:1.000f]
+    ];
+  });
+
+  return colorArray;
+}
+
+@end
 ```
 
-`node_modules` work like you would expect. You can just install them with `yarn` and they'll be inlined in the module that imports them.
+Pretty nifty! This shows a few things happening:
+1. The build system does a deep merge of all the token JSON files defined in the `source` attribute of `config.json`. This allows you to split up the token JSON files however you want. There are 2 JSON files with `color` as the top level key, but they get merged properly.
+1. The build system resolves references to other design tokens. `{size.font.medium.value}` gets resolved properly.
+1. The build system handles references to token values in other files as well as you can see in `tokens/color/font.json`.
 
-#### URLs
+Now let's make a change and see how that affects things. Open up `tokens/color/base.json` and change `"#111111"` to `"#000000"`. After you make that change, save the file and re-run the build command `style-dictionary build`. Open up the build files and take a look.
 
-```.tsx
-import * as _ from "https://ga.jspm.io/npm:lodash@4.17.21/index.js"
-```
+**Huzzah!**
 
-Url imports will just be kept intact so you can do non local esm imports.
-
-#### ESM
-
-```.tsx
-import { Button } from "./Button"
-```
-
-Local esm imports will be rewritten to include the file extension:
-
-```.tsx
-import { Button } from "./Button.js"
-```
-
-## Gotchas
-
-- **Private code**: you should keep your source private, but not your built code. Make sure to enable `minify` in the `esmbuild.js` script to minify your code.
-- **Assets**: you can host your assets (images, movies) anywhere you like and just use the full urls to use them in your components.
-- **Auto refresh**: you currently have to manually reload your components to see changes in your development code. It should be doable to make an `esbuild` plugin that inserts a snippet to auto reload after changes. Contributions are welcome.
-- **Other build tools**: this is just an example setup, but you should be able to use Rollup, Webpack, SWC, etc. as long as you set the output format to `esm`.
+Now go forth and create! Take a look at all the built-in [transforms](https://amzn.github.io/style-dictionary/#/transforms?id=pre-defined-transforms) and [formats](https://amzn.github.io/style-dictionary/#/formats?id=pre-defined-formats).
