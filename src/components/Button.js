@@ -1,3 +1,5 @@
+import React from 'react'
+
 export default function Button({title}) {
     // This is a React component containing an Example component
     // - Replace <Example /> with your own code
